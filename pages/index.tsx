@@ -1,5 +1,7 @@
 import { GetServerSideProps } from "next";
 import { useState } from "react";
+import FilterComponent from "./filter";
+import CharacterCard from "./character";
 
 interface Character {
   id: number;
@@ -17,10 +19,10 @@ const Home = ({ characters }: Props) => {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [genderFilter, setGenderFilter] = useState<string>("");
 
-  const filteredCharacters = characters.filter(character => {
+  const filteredCharacters = characters.filter((character) => {
     return (
-      (statusFilter === "" || character.status === statusFilter) &&
-      (genderFilter === "" || character.gender === genderFilter)
+      (!statusFilter || character.status === statusFilter) &&
+      (!genderFilter || character.gender === genderFilter)
     );
   });
 
@@ -31,58 +33,17 @@ const Home = ({ characters }: Props) => {
       </h1>
 
       <div className="flex justify-center items-center bg-gray-10">
-        <div className="mb-4 p-6 bg-[#55AD9B] shadow-lg rounded-lg">
-          <label className="mr-4 text-lg font-semibold text-gray-900">
-            Status:
-          </label>
-          <select
-            value={statusFilter}
-            onChange={e => setStatusFilter(e.target.value)}
-            className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#32887c] transition-colors duration-300"
-          >
-            <option value="">All</option>
-            <option value="Alive">Alive</option>
-            <option value="Dead">Dead</option>
-            <option value="unknown">Unknown</option>
-          </select>
-          <label className="ml-6 mr-4 text-lg font-semibold text-gray-900">
-            Gender:
-          </label>
-          <select
-            value={genderFilter}
-            onChange={e => setGenderFilter(e.target.value)}
-            className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#32887c] transition-colors duration-300"
-          >
-            <option value="">All</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-            <option value="Genderless">Genderless</option>
-            <option value="unknown">Unknown</option>
-          </select>
-        </div>
+        <FilterComponent
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          genderFilter={genderFilter}
+          setGenderFilter={setGenderFilter}
+        />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
-        {filteredCharacters.map(character => (
-          <div
-            key={character.id}
-            className="bg-[#98b9bd] shadow-lg rounded-lg overflow-hidden transform transition duration-500 hover:scale-105 hover:shadow-[#42739d] flex"
-          >
-            <div className="w-1/3">
-              <img
-                src={character.image}
-                alt={character.name}
-                className="w-full h-full object-cover rounded-l-lg"
-              />
-            </div>
-            <div className="p-4 w-2/3">
-              <h2 className="text-2xl font-bold text-slate-950">
-                {character.name}
-              </h2>
-              <p className="text-gray-900">Status: {character.status}</p>
-              <p className="text-gray-900">Gender: {character.gender}</p>
-            </div>
-          </div>
+        {filteredCharacters.map((character) => (
+          <CharacterCard key={character.id} {...character} />
         ))}
       </div>
     </div>
